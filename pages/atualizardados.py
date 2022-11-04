@@ -1,7 +1,7 @@
 import tkinter as tk
 
 
-class PageOne(tk.Frame):
+class AtualizarDados(tk.Frame):
     """"""
 
     def __init__(self, parent, controller):
@@ -10,7 +10,7 @@ class PageOne(tk.Frame):
         self.controller = controller
         self.id = controller.id
 
-        label = tk.Label(self, text="Page One", font=controller.titlefont)
+        label = tk.Label(self, text="Atualizar Dados", font=controller.titlefont)
 
         label.pack()
 

@@ -1,7 +1,11 @@
 import tkinter as tk
 from tkinter import font as tkfont
 from .welcomepage import WelcomePage
-from .pageone import PageOne
+from .planejarrota import PlanejarRota
+from .instrucoes import Instrucoes
+from .faleconosco import FaleConosco
+from .atualizardados import AtualizarDados
+
 
 
 class MainFrame(tk.Tk):
@@ -26,7 +30,7 @@ class MainFrame(tk.Tk):
 
         self.pages = {}
 
-        for p in (WelcomePage, PageOne):
+        for p in (WelcomePage, PlanejarRota, Instrucoes, FaleConosco, AtualizarDados):
             page_name = p.__name__
             frame = p(parent=container, controller=self)
             frame.grid(row=0, column=0, sticky="nsew")
