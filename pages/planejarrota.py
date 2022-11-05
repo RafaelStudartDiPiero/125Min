@@ -6,7 +6,7 @@ class PlanejarRota(tk.Frame):
 
     def __init__(self, parent, controller):
         """"""
-        tk.Frame.__init__(self, parent)
+        tk.Frame.__init__(self, parent, bg="#E2E2E2")
         self.controller = controller
         self.id = controller.id
 
