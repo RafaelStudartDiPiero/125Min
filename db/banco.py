@@ -15,21 +15,18 @@ class Banco():
                      rua text,
                      numero text,
                      cidade text,
-                     cep text,
-        )""")
+                     cep text)""")
 
         c.execute("""create table if not exists config(
                      id_config integer primary key autoincrement,
                      alimentacao real,
                      salario_hora real,
                      hospedagem real,
-                     custo_gasolina real,
-        )""")
+                     custo_gasolina real)""")
 
-        c.execute("""insert into config(alimentacao, salario_hora, hospedagem, custo_gasolina)
-                     select 0, 0, 0, 0
-                     where not exists (select * from config)
-        """)
+        c.execute("""insert into config(id_config ,alimentacao, salario_hora, hospedagem, custo_gasolina)
+                     select 0, 0, 0, 0, 0
+                     where not exists (select * from config)""")
 
         self.conexao.commit()
         c.close()

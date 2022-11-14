@@ -16,8 +16,8 @@ class Agencia(object):
         try:
             c = banco.conexao.cursor()
 
-            c.execute("insert into agencias(rua,numero,cidade,cep) values('" + self.rua +
-                      "', '" + self.numero + "', '" + self.cidade + "', '" + self.cep + "')")
+            c.execute('''insert into agencias(rua,numero,cidade,cep) values("{}","{}","{}","{}")'''.format(
+                self.rua, self.numero, self.cidade, self.cep))
 
             banco.conexao.commit()
             c.close()
@@ -26,15 +26,15 @@ class Agencia(object):
 
         except:
             return "Ocorreu um erro na inserção de uma agência"
-    
+
     @property
     def updateAgencia(self):
         banco = Banco()
-        try: 
+        try:
             c = banco.conexao.cursor()
 
-            c.execute("update agencias set rua = '" + self.rua + "', numero = '" + self.numero +
-                      "', cidade = '" + self.cidade + "', cep = '" + self.cep + "' where id_agencia = '" + self.id_agencia + "' ")
+            c.execute('''update agencias set rua ="{}", numero = "{}", cidade = "{}", cep = "{}" where id_agencia ={}'''.format(
+                self.rua, self.numero, self.cidade, self.cep, str(self.id_agencia)))
 
             banco.conexao.commit()
             c.close()
@@ -43,14 +43,15 @@ class Agencia(object):
 
         except:
             return "Ocorreu um erro na alteração de uma agência"
-    
+
     @property
     def deleteAgencia(self):
         banco = Banco()
-        try: 
+        try:
             c = banco.conexao.cursor()
 
-            c.execute("delete from agencias where id_agencia = '" + self.id_agencia + "' ")
+            c.execute('''delete from agencias where id_agencia ={} '''.format(
+                str(self.id_agencia)))
 
             banco.conexao.commit()
             c.close()
@@ -59,14 +60,15 @@ class Agencia(object):
 
         except:
             return "Ocorreu um erro na exclusão de uma agência"
-    
+
     def selectAgencia(self, id_agencia):
         banco = Banco()
-        try: 
+        try:
             c = banco.conexao.cursor()
 
-            c.execute("select * from agencias where id_agencia = '" + self.id_agencia + "' ")
-            
+            c.execute(
+                '''select * from agencias where id_agencia ={}'''.format(str(self.id_agencia)))
+
             for row in c:
                 self.id_agencia = row[0]
                 self.rua = row[1]

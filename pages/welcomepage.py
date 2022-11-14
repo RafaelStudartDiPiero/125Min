@@ -11,39 +11,43 @@ class WelcomePage(tk.Frame):
         self.controller = controller
         self.id = controller.id
 
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
-        self.columnconfigure(2, weight=1)
-        self.columnconfigure(3, weight=1)
-        self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
+        self.bg = "#0501A7"
 
-        label = tk.Label(self, text="Seja bem-vindo!",
-                         font=controller.titlefont, bg="#0501A7", fg="#FFFFFF")
+        container1 = tk.Frame(self, bg=self.bg)
+        container1["pady"] = 5
+        container1["pady"] = 5
+        container1.pack()
 
-        label.grid(column=1, row=0, sticky=tk.N, padx=5, pady=5, columnspan=2)
+        container2 = tk.Frame(self, bg=self.bg)
+        container2["pady"] = 5
+        container2["padx"] = 5
+        container2.pack(expand=True)
 
-        b1 = tk.Button(self, text="Planejar rota",
+        container3 = tk.Frame(self, bg=self.bg)
+        container3["pady"] = 5
+        container3["padx"] = 5
+        container3.pack(side="bottom")
+
+        label = tk.Label(container1, text="Seja bem-vindo!",
+                         font=controller.titlefont, bg=self.bg, fg="#FFFFFF")
+        label.pack()
+
+        b1 = tk.Button(container2, text="Planejar rota",
                        command=lambda: controller.up_frame("PlanejarRota"), font=controller.buttonfont, bg="#FFFFFF")
+        b1.pack(side="left")
 
-        b1.grid(column=0, row=1, sticky=tk.N, padx=5, pady=5)
-
-        b2 = tk.Button(self, text="Atualizar dados",
+        b2 = tk.Button(container2, text="Atualizar dados",
                        command=lambda: controller.up_frame("AtualizarDados"), font=controller.buttonfont, bg="#FFFFFF")
+        b2.pack(side="left")
 
-        b2.grid(column=1, row=1, sticky=tk.N, padx=5, pady=5)
-
-        b3 = tk.Button(self, text="Instruções de uso",
+        b3 = tk.Button(container2, text="Instruções de uso",
                        command=lambda: controller.up_frame("Instrucoes"), font=controller.buttonfont, bg="#FFFFFF")
+        b3.pack(side="left")
 
-        b3.grid(column=2, row=1, sticky=tk.N, padx=5, pady=5)
-
-        b4 = tk.Button(self, text="Fale conosco",
+        b4 = tk.Button(container2, text="Fale conosco",
                        command=lambda: controller.up_frame("FaleConosco"), font=controller.buttonfont, bg="#FFFFFF")
+        b4.pack(side="left")
 
-        b4.grid(column=3, row=1, sticky=tk.N, padx=5, pady=5)
-
-        label = tk.Label(
-            self, text="125Min, planejando o seu futuro!", font=controller.descriptionfont, bg="#0501A7", fg="#FFFFFF")
-
-        label.grid(column=1, row=2, sticky=tk.N, padx=5, pady=5, columnspan=2)
+        des_label = tk.Label(
+            container3, text="125Min, planejando o seu futuro!", font=controller.descriptionfont, bg=self.bg, fg="#FFFFFF")
+        des_label.pack()
