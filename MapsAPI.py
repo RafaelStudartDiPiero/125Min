@@ -1,6 +1,5 @@
-import requests
 import json
-import urllib
+import urllib.request
 
 
 def create_data(api_key, adress_list):
