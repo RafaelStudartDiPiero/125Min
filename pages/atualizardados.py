@@ -77,6 +77,9 @@ class AtualizarDados(tk.Frame):
         self.alimentacao_entry["width"] = 20
         self.alimentacao_entry["font"] = controller.buttonfont
         self.alimentacao_entry.pack(side="left")
+        self.alimentacao_current = tk.Label(container3,
+                                            font=controller.buttonfont, bg=self.bg)
+        self.alimentacao_current.pack(side="left")
 
         salario_label = tk.Label(container4, text="Salário:",
                                  font=controller.buttonfont, bg=self.bg)
@@ -85,6 +88,9 @@ class AtualizarDados(tk.Frame):
         self.salario_entry["width"] = 20
         self.salario_entry["font"] = controller.buttonfont
         self.salario_entry.pack(side="left")
+        self.salario_current = tk.Label(container4,
+                                        font=controller.buttonfont, bg=self.bg)
+        self.salario_current.pack(side="left")
 
         hospedagem_label = tk.Label(container5, text="Hospedagem:",
                                     font=controller.buttonfont, bg=self.bg)
@@ -93,6 +99,9 @@ class AtualizarDados(tk.Frame):
         self.hospedagem_entry["width"] = 20
         self.hospedagem_entry["font"] = controller.buttonfont
         self.hospedagem_entry.pack(side="left")
+        self.hospedagem_current = tk.Label(container5,
+                                           font=controller.buttonfont, bg=self.bg)
+        self.hospedagem_current.pack(side="left")
 
         custo_gasolina_label = tk.Label(container6, text="Valor da Gasolina:",
                                         font=controller.buttonfont, bg=self.bg)
@@ -101,6 +110,9 @@ class AtualizarDados(tk.Frame):
         self.custo_gasolina_entry["width"] = 20
         self.custo_gasolina_entry["font"] = controller.buttonfont
         self.custo_gasolina_entry.pack(side="left")
+        self.custo_gasolina_current = tk.Label(container6,
+                                               font=controller.buttonfont, bg=self.bg)
+        self.custo_gasolina_current.pack(side="left")
 
         update_button = tk.Button(
             container7, text="Alterar", command=self.alterarConfig)
@@ -118,11 +130,18 @@ class AtualizarDados(tk.Frame):
         config = Config()
         config.selectConfig()
 
-        config.alimentacao = float(self.alimentacao_entry.get())
-        config.salario_hora = float(self.salario_entry.get())
-        config.hospedagem = float(self.hospedagem_entry.get())
-        config.custo_gasolina = float(self.custo_gasolina_entry.get())
-        
+        try:
+            config.alimentacao = float(self.alimentacao_entry.get(
+            )) if self.alimentacao_entry.get() != "" else config.alimentacao
+            config.salario_hora = float(
+                self.salario_entry.get()) if self.salario_entry.get() != "" else config.salario_hora
+            config.hospedagem = float(self.hospedagem_entry.get(
+            )) if self.hospedagem_entry.get() != "" else config.hospedagem
+            config.custo_gasolina = float(self.custo_gasolina_entry.get(
+            )) if self.custo_gasolina_entry.get() != "" else config.custo_gasolina
+        except:
+            self.config_status_label["text"] = "Algum dos valores não pode ser interpretado como número"
+            return
 
         self.config_status_label["text"] = config.updateConfig
 
@@ -130,3 +149,9 @@ class AtualizarDados(tk.Frame):
         self.salario_entry.delete(0, tk.END)
         self.hospedagem_entry.delete(0, tk.END)
         self.custo_gasolina_entry.delete(0, tk.END)
+
+        config.selectConfig()
+        self.alimentacao_current["text"] = config.alimentacao
+        self.salario_current["text"] = config.salario_hora
+        self.hospedagem_current["text"] = config.hospedagem
+        self.custo_gasolina_current["text"] = config.custo_gasolina
