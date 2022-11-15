@@ -22,12 +22,12 @@ class MainFrame(tk.Tk):
 
         self.titlefont = tkfont.Font(
             family='Times New Roman', size=24, slant="roman")
-
         self.descriptionfont = tkfont.Font(
             family='Times New Roman', size=14, slant="roman")
-
         self.buttonfont = tkfont.Font(
             family='Times New Roman', slant="roman")
+        self.buttonbg = "#FFFFFF"
+        self.pagesbg = "#E2E2E2"
 
         container = tk.Frame()
         container.grid(row=0, column=0, sticky="nesw")
