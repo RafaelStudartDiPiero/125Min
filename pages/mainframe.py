@@ -5,6 +5,7 @@ from .planejarrota import PlanejarRota
 from .instrucoes import Instrucoes
 from .faleconosco import FaleConosco
 from .atualizardados import AtualizarDados
+from .adicionaragencia import AdicionarAgencia
 
 
 class MainFrame(tk.Tk):
@@ -39,7 +40,7 @@ class MainFrame(tk.Tk):
 
         self.pages = {}
 
-        for p in (WelcomePage, PlanejarRota, Instrucoes, FaleConosco, AtualizarDados):
+        for p in (WelcomePage, PlanejarRota, Instrucoes, FaleConosco, AtualizarDados, AdicionarAgencia):
             page_name = p.__name__
             frame = p(parent=container, controller=self)
             frame.grid(row=0, column=0, sticky="nsew")

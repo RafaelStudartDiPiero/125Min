@@ -1,5 +1,5 @@
 import tkinter as tk
-
+from db.banco import Banco
 
 class PlanejarRota(tk.Frame):
     """"""
@@ -20,6 +20,11 @@ class PlanejarRota(tk.Frame):
         container2["padx"] = 5
         container2.pack(expand=True)
 
+        containerupdate = tk.Frame(container2, bg=controller.pagesbg)
+        containerupdate["pady"] = 5
+        containerupdate["padx"] = 5
+        containerupdate.pack(side="bottom",fill="x")
+
         container3 = tk.Frame(self, bg=controller.pagesbg)
         container3["pady"] = 5
         container3["padx"] = 5
@@ -39,14 +44,36 @@ class PlanejarRota(tk.Frame):
                          font=controller.titlefont, bg=controller.pagesbg)
         label.pack(side="left", padx=20)
 
+        self.listbox = tk.Listbox(container2)
+        self.listbox.pack(side="left", padx=20)
+        scrollbar = tk.Scrollbar(container2)
+        scrollbar.pack(side="right", fill="both")
+
+        self.listbox.config(yscrollcommand=scrollbar.set)
+        scrollbar.config(command=self.listbox.yview)
+
+        update_button = tk.Button(
+            containerupdate, text="Atualizar", command=self.updateListaAgencias)
+        update_button.pack(side = "bottom")
+
         question_label = tk.Label(container4, text="Não encontrou alguma agência",
                                   font=controller.descriptionfont, bg=controller.pagesbg)
         question_label.pack(side="left")
 
         register_bou = tk.Button(container5, text="Registrar nova agência", font=controller.buttonfont,
-                                 command=lambda: controller.up_frame("AtualizarDados"), bg=controller.buttonbg, padx=40, height=2)
+                                 command=lambda: controller.up_frame("AdicionarAgencia"), bg=controller.buttonbg, padx=40, height=2)
         register_bou.pack(side="left")
 
         inicial_bou = tk.Button(container5, text="Página Inicial", font=controller.buttonfont,
                                 command=lambda: controller.up_frame("WelcomePage"), bg=controller.buttonbg, height=2)
         inicial_bou.pack(side="right")
+
+    def updateListaAgencias(self):
+        banco = Banco()
+        c = banco.conexao.cursor()
+        c.execute(
+            '''select * from agencias ''')
+        self.listbox.delete(0, "end")
+        for row in c:
+            print("row")
+            self.listbox.insert("end", row[4])

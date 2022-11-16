@@ -50,8 +50,8 @@ class Agencia(object):
         try:
             c = banco.conexao.cursor()
 
-            c.execute('''delete from agencias where id_agencia ={} '''.format(
-                str(self.id_agencia)))
+            c.execute('''delete from agencias where cep ="{}" '''.format(
+                str(self.cep)))
 
             banco.conexao.commit()
             c.close()
@@ -61,21 +61,25 @@ class Agencia(object):
         except:
             return "Ocorreu um erro na exclusão de uma agência"
 
-    def selectAgencia(self, id_agencia):
+    def selectAgencia(self, cep):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-
+            print(cep)
             c.execute(
-                '''select * from agencias where id_agencia ={}'''.format(str(self.id_agencia)))
+                '''select * from agencias where cep ="{}"'''.format(str(cep)))
+            print("procurei")
 
             for row in c:
+                print("achei")
                 self.id_agencia = row[0]
                 self.rua = row[1]
                 self.numero = row[2]
                 self.cidade = row[3]
                 self.cep = row[4]
 
+            if self.cep == "":
+                raise Exception("Ocorreu um erro na busca de uma agência")
             c.close()
 
             return "Agência encontrada com sucesso."
