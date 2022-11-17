@@ -1,5 +1,7 @@
 import tkinter as tk
 from db.banco import Banco
+from VRP import run_otimization
+
 
 class PlanejarRota(tk.Frame):
     """"""
@@ -23,7 +25,7 @@ class PlanejarRota(tk.Frame):
         containerupdate = tk.Frame(container2, bg=controller.pagesbg)
         containerupdate["pady"] = 5
         containerupdate["padx"] = 5
-        containerupdate.pack(side="bottom",fill="x")
+        containerupdate.pack(side="bottom", fill="x")
 
         container3 = tk.Frame(self, bg=controller.pagesbg)
         container3["pady"] = 5
@@ -52,9 +54,13 @@ class PlanejarRota(tk.Frame):
         self.listbox.config(yscrollcommand=scrollbar.set)
         scrollbar.config(command=self.listbox.yview)
 
+        planning_button = tk.Button(
+            containerupdate, text="Planejar Rota", command=run_otimization, font=controller.buttonfont, bg=controller.buttonbg, height=2)
+        planning_button.pack(side="bottom")
+
         update_button = tk.Button(
-            containerupdate, text="Atualizar", command=self.updateListaAgencias)
-        update_button.pack(side = "bottom")
+            containerupdate, text="Atualizar", command=self.updateListaAgencias, font=controller.buttonfont, bg=controller.buttonbg, height=2)
+        update_button.pack(side="bottom")
 
         question_label = tk.Label(container4, text="Não encontrou alguma agência",
                                   font=controller.descriptionfont, bg=controller.pagesbg)
@@ -75,5 +81,4 @@ class PlanejarRota(tk.Frame):
             '''select * from agencias ''')
         self.listbox.delete(0, "end")
         for row in c:
-            print("row")
             self.listbox.insert("end", row[4])

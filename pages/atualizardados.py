@@ -8,123 +8,121 @@ class AtualizarDados(tk.Frame):
 
     def __init__(self, parent, controller):
         """"""
-        tk.Frame.__init__(self, parent, bg="#E2E2E2")
+        tk.Frame.__init__(self, parent, bg=controller.pagesbg)
         self.controller = controller
         self.id = controller.id
 
-        self.bg = "#E2E2E2"
-
-        container1 = tk.Frame(self, bg=self.bg)
+        container1 = tk.Frame(self, bg=controller.pagesbg)
         container1["pady"] = 5
         container1["pady"] = 5
-        container1.pack()
+        container1.pack(fill="x")
 
-        config_container = tk.Frame(self, bg=self.bg)
+        config_container = tk.Frame(self, bg=controller.pagesbg)
         config_container.pack(expand=True)
 
-        container2 = tk.Frame(config_container, bg=self.bg)
+        container2 = tk.Frame(config_container, bg=controller.pagesbg)
         container2["pady"] = 5
         container2["padx"] = 20
         container2.pack()
 
-        container3 = tk.Frame(config_container, bg=self.bg)
+        container3 = tk.Frame(config_container, bg=controller.pagesbg)
         container3["pady"] = 5
         container3["padx"] = 20
         container3.pack()
 
-        container4 = tk.Frame(config_container, bg=self.bg)
+        container4 = tk.Frame(config_container, bg=controller.pagesbg)
         container4["pady"] = 5
         container4["padx"] = 5
         container4.pack()
 
-        container5 = tk.Frame(config_container, bg=self.bg)
+        container5 = tk.Frame(config_container, bg=controller.pagesbg)
         container5["pady"] = 5
         container5["padx"] = 5
         container5.pack()
 
-        container6 = tk.Frame(config_container, bg=self.bg)
+        container6 = tk.Frame(config_container, bg=controller.pagesbg)
         container6["pady"] = 5
         container6["padx"] = 5
         container6.pack()
 
-        container7 = tk.Frame(config_container, bg=self.bg)
+        container7 = tk.Frame(config_container, bg=controller.pagesbg)
         container7["pady"] = 5
         container7["padx"] = 5
         container7.pack()
 
-        container8 = tk.Frame(config_container, bg=self.bg)
+        container8 = tk.Frame(config_container, bg=controller.pagesbg)
         container8["pady"] = 5
         container8["padx"] = 5
         container8.pack()
 
-        container9 = tk.Frame(self, bg=self.bg)
+        container9 = tk.Frame(self, bg=controller.pagesbg)
         container9["pady"] = 5
         container9["padx"] = 5
-        container9.pack(side="bottom")
+        container9.pack(side="bottom", fill="x")
 
         label = tk.Label(container1, text="Atualizar Dados",
-                         font=controller.titlefont, bg=self.bg)
-        label.pack()
+                         font=controller.titlefont, bg=controller.pagesbg)
+        label.pack(side="left", padx=20)
 
         config_label = tk.Label(container2, text="Configuração",
-                                font=controller.descriptionfont, bg=self.bg)
+                                font=controller.descriptionfont, bg=controller.pagesbg)
         config_label.pack()
 
         alimentacao_label = tk.Label(container3, text="Alimentação:",
-                                     font=controller.buttonfont, bg=self.bg)
+                                     font=controller.buttonfont, bg=controller.pagesbg)
         alimentacao_label.pack(side="left")
         self.alimentacao_entry = tk.Entry(container3)
         self.alimentacao_entry["width"] = 20
         self.alimentacao_entry["font"] = controller.buttonfont
         self.alimentacao_entry.pack(side="left")
         self.alimentacao_current = tk.Label(container3,
-                                            font=controller.buttonfont, bg=self.bg)
+                                            font=controller.buttonfont, bg=controller.pagesbg)
         self.alimentacao_current.pack(side="left")
 
         salario_label = tk.Label(container4, text="Salário:",
-                                 font=controller.buttonfont, bg=self.bg)
+                                 font=controller.buttonfont, bg=controller.pagesbg)
         salario_label.pack(side="left")
         self.salario_entry = tk.Entry(container4)
         self.salario_entry["width"] = 20
         self.salario_entry["font"] = controller.buttonfont
         self.salario_entry.pack(side="left")
         self.salario_current = tk.Label(container4,
-                                        font=controller.buttonfont, bg=self.bg)
+                                        font=controller.buttonfont, bg=controller.pagesbg)
         self.salario_current.pack(side="left")
 
         hospedagem_label = tk.Label(container5, text="Hospedagem:",
-                                    font=controller.buttonfont, bg=self.bg)
+                                    font=controller.buttonfont, bg=controller.pagesbg)
         hospedagem_label.pack(side="left")
         self.hospedagem_entry = tk.Entry(container5)
         self.hospedagem_entry["width"] = 20
         self.hospedagem_entry["font"] = controller.buttonfont
         self.hospedagem_entry.pack(side="left")
         self.hospedagem_current = tk.Label(container5,
-                                           font=controller.buttonfont, bg=self.bg)
+                                           font=controller.buttonfont, bg=controller.pagesbg)
         self.hospedagem_current.pack(side="left")
 
         custo_gasolina_label = tk.Label(container6, text="Valor da Gasolina:",
-                                        font=controller.buttonfont, bg=self.bg)
+                                        font=controller.buttonfont, bg=controller.pagesbg)
         custo_gasolina_label.pack(side="left")
         self.custo_gasolina_entry = tk.Entry(container6)
         self.custo_gasolina_entry["width"] = 20
         self.custo_gasolina_entry["font"] = controller.buttonfont
         self.custo_gasolina_entry.pack(side="left")
         self.custo_gasolina_current = tk.Label(container6,
-                                               font=controller.buttonfont, bg=self.bg)
+                                               font=controller.buttonfont, bg=controller.pagesbg)
         self.custo_gasolina_current.pack(side="left")
 
         update_button = tk.Button(
-            container7, text="Alterar", command=self.alterarConfig)
+            container7, text="Alterar", command=self.alterarConfig, font=controller.buttonfont, bg=controller.buttonbg, height=2)
         update_button.pack()
 
         self.config_status_label = tk.Label(container8,
-                                            font=controller.buttonfont, bg=self.bg)
+                                            font=controller.buttonfont, bg=controller.pagesbg)
         self.config_status_label.pack()
 
-        bou = tk.Button(container9, text="To Welcome Page",
-                        command=lambda: controller.up_frame("WelcomePage"))
-        bou.pack()
+        bou = tk.Button(container9, text="Página Inicial",
+                        command=lambda: controller.up_frame("WelcomePage"), font=controller.buttonfont, bg=controller.buttonbg, height=2)
+        bou.pack(side="right")
 
     def alterarConfig(self):
         config = Config()

@@ -65,13 +65,10 @@ class Agencia(object):
         banco = Banco()
         try:
             c = banco.conexao.cursor()
-            print(cep)
             c.execute(
                 '''select * from agencias where cep ="{}"'''.format(str(cep)))
-            print("procurei")
 
             for row in c:
-                print("achei")
                 self.id_agencia = row[0]
                 self.rua = row[1]
                 self.numero = row[2]
