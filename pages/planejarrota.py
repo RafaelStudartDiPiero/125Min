@@ -1,6 +1,8 @@
 import tkinter as tk
+from tkinter.scrolledtext import ScrolledText
 from db.banco import Banco
 from VRP import run_otimization
+from functools import partial
 
 
 class PlanejarRota(tk.Frame):
@@ -17,12 +19,12 @@ class PlanejarRota(tk.Frame):
         container1["pady"] = 5
         container1.pack(fill="x")
 
-        container2 = tk.Frame(self, bg=controller.pagesbg)
-        container2["pady"] = 5
-        container2["padx"] = 5
-        container2.pack(expand=True)
+        self.container2 = tk.Frame(self, bg=controller.pagesbg)
+        self.container2["pady"] = 5
+        self.container2["padx"] = 5
+        self.container2.pack(expand=True)
 
-        containerupdate = tk.Frame(container2, bg=controller.pagesbg)
+        containerupdate = tk.Frame(self.container2, bg=controller.pagesbg)
         containerupdate["pady"] = 5
         containerupdate["padx"] = 5
         containerupdate.pack(side="bottom", fill="x")
@@ -46,16 +48,18 @@ class PlanejarRota(tk.Frame):
                          font=controller.titlefont, bg=controller.pagesbg)
         label.pack(side="left", padx=20)
 
-        self.listbox = tk.Listbox(container2)
-        self.listbox.pack(side="left", padx=20)
-        scrollbar = tk.Scrollbar(container2)
-        scrollbar.pack(side="right", fill="both")
+        # self.listbox = tk.Listbox(self.container2)
+        # self.listbox.pack(side="left", padx=20)
+        # scrollbar = tk.Scrollbar(self.container2)
+        # scrollbar.pack(side="right", fill="both")
 
-        self.listbox.config(yscrollcommand=scrollbar.set)
-        scrollbar.config(command=self.listbox.yview)
+        # self.listbox.config(yscrollcommand=scrollbar.set)
+        # scrollbar.config(command=self.listbox.yview)
+        self.scroll = ScrolledText(self.container2,width=20,height=10)
+        self.scroll.pack()
 
         planning_button = tk.Button(
-            containerupdate, text="Planejar Rota", command=run_otimization, font=controller.buttonfont, bg=controller.buttonbg, height=2)
+            containerupdate, text="Planejar Rota", command=self.runOtimization, font=controller.buttonfont, bg=controller.buttonbg, height=2)
         planning_button.pack(side="bottom")
 
         update_button = tk.Button(
@@ -74,11 +78,38 @@ class PlanejarRota(tk.Frame):
                                 command=lambda: controller.up_frame("WelcomePage"), bg=controller.buttonbg, height=2)
         inicial_bou.pack(side="right")
 
+        self.check_box = []
+        self.selected_boxes = []
+
+    def choose(self,index, row):
+        if self.var_list[index].get() == 1:
+            self.selected_boxes.append(row)
+        else:
+            self.selected_boxes.remove(row)
+        print(f'{self.selected_boxes}' if self.var_list[index].get() == 1 else f'removeu: {row[4]}')
+
     def updateListaAgencias(self):
+        self.scroll.delete('1.0', tk.END)
+        self.var_list = []
         banco = Banco()
         c = banco.conexao.cursor()
         c.execute(
             '''select * from agencias ''')
-        self.listbox.delete(0, "end")
-        for row in c:
-            self.listbox.insert("end", row[4])
+
+        for cb in self.check_box:
+            cb.pack_forget()
+            cb.destroy()
+        
+        self.check_box = []
+        for index,row in enumerate(c):
+            self.var_list.append(tk.IntVar(value=0))
+            cb= tk.Checkbutton(self.scroll, variable=self.var_list[index],
+                text=row[4], command=partial(self.choose, index, row))
+            self.check_box.append(cb)
+            cb.pack()
+            self.scroll.window_create('end',window=cb)
+            self.scroll.insert('end', '\n')
+
+    def runOtimization(self):
+        run_otimization(self.selected_boxes)
+

@@ -22,12 +22,16 @@ def create_data_model(num_vehicles, api_key, adress_list):
     data['depot'] = 0
     return data
 
-def create_adress_list():
+def create_adress_list(selected_agency):
     adresses = {}
-    adresses['street_list'] = ['Rua Olivia Guedes Penteado', 'Av. Adolfo Pinheiro', 'Rua Simao Alvares', 'Rua Tuiuti', 'Rua H8B', 'Av. dos Esportes', 'R. Juvenal de Souza Pinto', 'R. Cel Luís Barroso', 'R. Clarence', 'Rua Min. Roberto Barroso Alves', 'Avenida Santa Cruz do Areão']
-    adresses['number_list'] = [str(746), str(886), str(351), str(921), str(230), str(731), str(14), str(425), str(179), str(872), str(384)]
-    adresses['city_list'] = ['Socorro', 'Santo Amaro', 'Pinheiros', 'Tatuape', 'Sao Jose dos Campos', 'Valinhos', 'Socorro', 'Santo Amaro', 'Vila Cruzeiro', 'Santo Amaro', 'Taubaté']
-    adresses['CEP_list'] = ['04766-000', '04734-002', '05339-000', '03081-000', '12228-461', '13270-070', '13960-000', '04750-030', '04727-040', '47370-000', '12061-100']
+    adresses['street_list'] = [row[1] for row in selected_agency]
+    adresses['number_list'] = [row[2] for row in selected_agency]
+    adresses['city_list'] = [row[3] for row in selected_agency]
+    adresses['CEP_list'] = [row[4] for row in selected_agency]
+    # adresses['street_list'] = ['Rua Olivia Guedes Penteado', 'Av. Adolfo Pinheiro', 'Rua Simao Alvares', 'Rua Tuiuti', 'Rua H8B', 'Av. dos Esportes', 'R. Juvenal de Souza Pinto', 'R. Cel Luís Barroso', 'R. Clarence', 'Rua Min. Roberto Barroso Alves', 'Avenida Santa Cruz do Areão']
+    # adresses['number_list'] = [str(746), str(886), str(351), str(921), str(230), str(731), str(14), str(425), str(179), str(872), str(384)]
+    # adresses['city_list'] = ['Socorro', 'Santo Amaro', 'Pinheiros', 'Tatuape', 'Sao Jose dos Campos', 'Valinhos', 'Socorro', 'Santo Amaro', 'Vila Cruzeiro', 'Santo Amaro', 'Taubaté']
+    # adresses['CEP_list'] = ['04766-000', '04734-002', '05339-000', '03081-000', '12228-461', '13270-070', '13960-000', '04750-030', '04727-040', '47370-000', '12061-100']
     adress_list = []
     for i in range(len(adresses['street_list'])):
         adresses['CEP_list'][i] = adresses['CEP_list'][i].replace(" ","+").replace("ã", "a").replace("á", "a").replace("â", "a").replace("ó", "o").replace("ô", "o").replace("õ", "o").replace("é", "e").replace("í", "i")
@@ -151,10 +155,10 @@ def run_sleep_otimization(solution, data, manager, routing): # Decides if driver
 
 
 
-def run_otimization():
+def run_otimization(selected_agency):
     api_key = 'AIzaSyCsQr7dKJW_3V_YutYvVZjxl0zcAdRUb9A'
     num_vehicles = 2
-    adress_list = create_adress_list()
+    adress_list = create_adress_list(selected_agency)
 
     """Entry point of the program."""
     # Instantiate the data problem.

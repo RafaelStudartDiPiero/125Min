@@ -160,7 +160,7 @@ class AdicionarAgencia(tk.Frame):
             if self.rua_entry.get() == "" or self.numero_entry.get() == "" or self.cidade_entry.get() == "" or self.cep_entry.get() == "":
                 raise ValueError("Algum campo não foi preenchido")
             agencia.rua = self.rua_entry.get()
-            agencia.numero = int(self.numero_entry.get())
+            agencia.numero = str(int(self.numero_entry.get()))
             agencia.cidade = self.cidade_entry.get()
             agencia.cep = self.cep_entry.get()
 
