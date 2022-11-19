@@ -89,15 +89,12 @@ def run_sleep_otimization(solution, data, manager, routing):
     # must be user input -> change in near future
     config = Config()
     config.selectConfig()
-    # sleep_price = 100
-    sleep_price = config.hospedagem
-    average_fuel_consuption = 8*1000  # 8 Km/L
-    # diesel_price = 5 # R$/L
-    diesel_price = config.custo_gasolina  # R$/L
-    # employee_sallary = 80/(60*60) #R$ 80,00 / h
+    sleep_price = config.hospedagem  # sleep_price = 100
+    average_fuel_consuption = config.consumo_combustivel*1000  # 8 Km/L
+    diesel_price = config.custo_gasolina  # R$/L # diesel_price = 5 # R$/L
     employee_sallary = config.salario_hora/(60*60)  # R$ 80,00 / h
     max_work_time = 12*60*60  # 12h
-    average_maintaince_time = 4*60*60  # 4h
+    average_maintaince_time = config.tempo_manutencao*60*60  # 4h
     otimized_path_matrix = []
     total_price = 0
     for vehicle_id in range(data['num_vehicles']):
