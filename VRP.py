@@ -184,7 +184,9 @@ def run_sleep_otimization(solution, data, manager, routing):
 
 def run_otimization(selected_agency):
     api_key = 'AIzaSyCsQr7dKJW_3V_YutYvVZjxl0zcAdRUb9A'
-    num_vehicles = 2
+    config = Config()
+    config.selectConfig()
+    num_vehicles = config.numero_motoristas
     adress_list = create_adress_list(selected_agency)
 
     """Entry point of the program."""

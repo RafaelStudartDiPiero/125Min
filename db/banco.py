@@ -23,10 +23,11 @@ class Banco():
                      tempo_manutencao real,
                      salario_hora real,
                      hospedagem real,
-                     custo_gasolina real)""")
+                     custo_gasolina real,
+                     numero_motoristas integer)""")
 
-        c.execute("""insert into config(id_config ,consumo_combustivel, tempo_manutencao, salario_hora, hospedagem, custo_gasolina)
-                     select 0, 0, 0, 0, 0, 0
+        c.execute("""insert into config(id_config ,consumo_combustivel, tempo_manutencao, salario_hora, hospedagem, custo_gasolina, numero_motoristas)
+                     select 0, 0, 0, 0, 0, 0, 2
                      where not exists (select * from config)""")
 
         self.conexao.commit()

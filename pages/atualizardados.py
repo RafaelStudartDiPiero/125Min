@@ -60,10 +60,15 @@ class AtualizarDados(tk.Frame):
         container9["padx"] = 5
         container9.pack()
 
-        container10 = tk.Frame(self, bg=controller.pagesbg)
+        container10 = tk.Frame(config_container, bg=controller.pagesbg)
         container10["pady"] = 5
         container10["padx"] = 5
-        container10.pack(side="bottom", fill="x")
+        container10.pack()
+
+        container11 = tk.Frame(self, bg=controller.pagesbg)
+        container11["pady"] = 5
+        container11["padx"] = 5
+        container11.pack(side="bottom", fill="x")
 
         label = tk.Label(container1, text="Atualizar Dados",
                          font=controller.titlefont, bg=controller.pagesbg)
@@ -128,15 +133,26 @@ class AtualizarDados(tk.Frame):
                                                font=controller.buttonfont, bg=controller.pagesbg)
         self.custo_gasolina_current.pack(side="left")
 
+        motoristas_label = tk.Label(container8, text="Número de Motoristas:",
+                                        font=controller.buttonfont, bg=controller.pagesbg)
+        motoristas_label.pack(side="left")
+        self.motoristas_entry = tk.Entry(container8)
+        self.motoristas_entry["width"] = 20
+        self.motoristas_entry["font"] = controller.buttonfont
+        self.motoristas_entry.pack(side="left")
+        self.motoristas_current = tk.Label(container8,
+                                               font=controller.buttonfont, bg=controller.pagesbg)
+        self.motoristas_current.pack(side="left")
+
         update_button = tk.Button(
-            container8, text="Alterar", command=self.alterarConfig, font=controller.buttonfont, bg=controller.buttonbg, height=2)
+            container9, text="Alterar", command=self.alterarConfig, font=controller.buttonfont, bg=controller.buttonbg, height=2)
         update_button.pack()
 
-        self.config_status_label = tk.Label(container9,
+        self.config_status_label = tk.Label(container10,
                                             font=controller.buttonfont, bg=controller.pagesbg)
         self.config_status_label.pack()
 
-        bou = tk.Button(container10, text="Página Inicial",
+        bou = tk.Button(container11, text="Página Inicial",
                         command=lambda: controller.up_frame("WelcomePage"), font=controller.buttonfont, bg=controller.buttonbg, height=2)
         bou.pack(side="right")
 
@@ -155,6 +171,8 @@ class AtualizarDados(tk.Frame):
             )) if self.hospedagem_entry.get() != "" else config.hospedagem
             config.custo_gasolina = float(self.custo_gasolina_entry.get(
             )) if self.custo_gasolina_entry.get() != "" else config.custo_gasolina
+            config.numero_motoristas = int(self.motoristas_entry.get(
+            )) if self.motoristas_entry.get() != "" else config.numero_motoristas
         except:
             self.config_status_label["text"] = "Algum dos valores não pode ser interpretado como número"
             return
@@ -166,6 +184,7 @@ class AtualizarDados(tk.Frame):
         self.salario_entry.delete(0, tk.END)
         self.hospedagem_entry.delete(0, tk.END)
         self.custo_gasolina_entry.delete(0, tk.END)
+        self.motoristas_entry.delete(0, tk.END)
 
         config.selectConfig()
         self.consumo_comb_current["text"] = config.consumo_combustivel
@@ -173,3 +192,4 @@ class AtualizarDados(tk.Frame):
         self.salario_current["text"] = config.salario_hora
         self.hospedagem_current["text"] = config.hospedagem
         self.custo_gasolina_current["text"] = config.custo_gasolina
+        self.motoristas_current["text"] = config.numero_motoristas
