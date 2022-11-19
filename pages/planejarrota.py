@@ -48,14 +48,7 @@ class PlanejarRota(tk.Frame):
                          font=controller.titlefont, bg=controller.pagesbg)
         label.pack(side="left", padx=20)
 
-        # self.listbox = tk.Listbox(self.container2)
-        # self.listbox.pack(side="left", padx=20)
-        # scrollbar = tk.Scrollbar(self.container2)
-        # scrollbar.pack(side="right", fill="both")
-
-        # self.listbox.config(yscrollcommand=scrollbar.set)
-        # scrollbar.config(command=self.listbox.yview)
-        self.scroll = ScrolledText(self.container2,width=20,height=10)
+        self.scroll = ScrolledText(self.container2, width=20, height=10)
         self.scroll.pack()
 
         planning_button = tk.Button(
@@ -81,16 +74,16 @@ class PlanejarRota(tk.Frame):
         self.check_box = []
         self.selected_boxes = []
 
-    def choose(self,index, row):
+    def choose(self, index, row):
         if self.var_list[index].get() == 1:
             self.selected_boxes.append(row)
         else:
             self.selected_boxes.remove(row)
-        print(f'{self.selected_boxes}' if self.var_list[index].get() == 1 else f'removeu: {row[4]}')
 
     def updateListaAgencias(self):
         self.scroll.delete('1.0', tk.END)
         self.var_list = []
+        self.selected_boxes = []
         banco = Banco()
         c = banco.conexao.cursor()
         c.execute(
@@ -99,17 +92,16 @@ class PlanejarRota(tk.Frame):
         for cb in self.check_box:
             cb.pack_forget()
             cb.destroy()
-        
+
         self.check_box = []
-        for index,row in enumerate(c):
+        for index, row in enumerate(c):
             self.var_list.append(tk.IntVar(value=0))
-            cb= tk.Checkbutton(self.scroll, variable=self.var_list[index],
-                text=row[4], command=partial(self.choose, index, row))
+            cb = tk.Checkbutton(self.scroll, variable=self.var_list[index],
+                                text=row[4], command=partial(self.choose, index, row))
             self.check_box.append(cb)
             cb.pack()
-            self.scroll.window_create('end',window=cb)
+            self.scroll.window_create('end', window=cb)
             self.scroll.insert('end', '\n')
 
     def runOtimization(self):
         run_otimization(self.selected_boxes)
-

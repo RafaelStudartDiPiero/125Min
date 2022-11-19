@@ -12,9 +12,11 @@
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 import MapsAPI
+from models.config import Config
+
 
 def create_data_model(num_vehicles, api_key, adress_list):
-    
+
     data = MapsAPI.create_data(api_key, adress_list)
     data['distance_matrix'] = MapsAPI.create_distance_matrix(data)
     data['time_matrix'] = MapsAPI.create_time_matrix(data)
@@ -22,22 +24,23 @@ def create_data_model(num_vehicles, api_key, adress_list):
     data['depot'] = 0
     return data
 
+
 def create_adress_list(selected_agency):
     adresses = {}
     adresses['street_list'] = [row[1] for row in selected_agency]
     adresses['number_list'] = [row[2] for row in selected_agency]
     adresses['city_list'] = [row[3] for row in selected_agency]
     adresses['CEP_list'] = [row[4] for row in selected_agency]
-    # adresses['street_list'] = ['Rua Olivia Guedes Penteado', 'Av. Adolfo Pinheiro', 'Rua Simao Alvares', 'Rua Tuiuti', 'Rua H8B', 'Av. dos Esportes', 'R. Juvenal de Souza Pinto', 'R. Cel Luís Barroso', 'R. Clarence', 'Rua Min. Roberto Barroso Alves', 'Avenida Santa Cruz do Areão']
-    # adresses['number_list'] = [str(746), str(886), str(351), str(921), str(230), str(731), str(14), str(425), str(179), str(872), str(384)]
-    # adresses['city_list'] = ['Socorro', 'Santo Amaro', 'Pinheiros', 'Tatuape', 'Sao Jose dos Campos', 'Valinhos', 'Socorro', 'Santo Amaro', 'Vila Cruzeiro', 'Santo Amaro', 'Taubaté']
-    # adresses['CEP_list'] = ['04766-000', '04734-002', '05339-000', '03081-000', '12228-461', '13270-070', '13960-000', '04750-030', '04727-040', '47370-000', '12061-100']
     adress_list = []
     for i in range(len(adresses['street_list'])):
-        adresses['CEP_list'][i] = adresses['CEP_list'][i].replace(" ","+").replace("ã", "a").replace("á", "a").replace("â", "a").replace("ó", "o").replace("ô", "o").replace("õ", "o").replace("é", "e").replace("í", "i")
-        adresses['city_list'][i] = adresses['city_list'][i].replace(" ","+").replace("ã", "a").replace("á", "a").replace("â", "a").replace("ó", "o").replace("ô", "o").replace("õ", "o").replace("é", "e").replace("í", "i")
-        adresses['street_list'][i] = adresses['street_list'][i].replace(" ","+").replace("ã", "a").replace("á", "a").replace("â", "a").replace("ó", "o").replace("ô", "o").replace("õ", "o").replace("é", "e").replace("í", "i")
-        adress_list = adress_list + [adresses['street_list'][i]+'+'+adresses['number_list'][i]+'+'+adresses['city_list'][i]+'+'+adresses['CEP_list'][i]]
+        adresses['CEP_list'][i] = adresses['CEP_list'][i].replace(" ", "+").replace("ã", "a").replace("á", "a").replace(
+            "â", "a").replace("ó", "o").replace("ô", "o").replace("õ", "o").replace("é", "e").replace("í", "i")
+        adresses['city_list'][i] = adresses['city_list'][i].replace(" ", "+").replace("ã", "a").replace("á", "a").replace(
+            "â", "a").replace("ó", "o").replace("ô", "o").replace("õ", "o").replace("é", "e").replace("í", "i")
+        adresses['street_list'][i] = adresses['street_list'][i].replace(" ", "+").replace("ã", "a").replace("á", "a").replace(
+            "â", "a").replace("ó", "o").replace("ô", "o").replace("õ", "o").replace("é", "e").replace("í", "i")
+        adress_list = adress_list + [adresses['street_list'][i]+'+'+adresses['number_list']
+                                     [i]+'+'+adresses['city_list'][i]+'+'+adresses['CEP_list'][i]]
     return adress_list
 
 
@@ -48,12 +51,14 @@ def distance_callback(from_index, to_index, manager, data):
     to_node = manager.IndexToNode(to_index)
     return data['distance_matrix'][from_node][to_node]
 
+
 def time_callback(from_index, to_index, manager, data):
     """Returns the time distance between the two nodes."""
     # Convert from routing variable Index to distance matrix NodeIndex.
     from_node = manager.IndexToNode(from_index)
     to_node = manager.IndexToNode(to_index)
     return data['time_matrix'][from_node][to_node]
+
 
 def print_solution(data, manager, routing, solution):
     """Prints solution on console."""
@@ -78,14 +83,21 @@ def print_solution(data, manager, routing, solution):
         max_route_distance = max(route_distance, max_route_distance)
     print('Maximum of the route distances: {}m'.format(max_route_distance))
 
-def run_sleep_otimization(solution, data, manager, routing): # Decides if driver will return to origin
-    #must be user input -> change in near future
-    sleep_price = 100
-    average_fuel_consuption = 8*1000 # 8 Km/L
-    diesel_price = 5 # R$/L
-    employee_sallary = 80/(60*60) #R$ 80,00 / h
-    max_work_time = 12*60*60 #12h
-    average_maintaince_time = 4*60*60 # 4h
+
+# Decides if driver will return to origin
+def run_sleep_otimization(solution, data, manager, routing):
+    # must be user input -> change in near future
+    config = Config()
+    config.selectConfig()
+    # sleep_price = 100
+    sleep_price = config.hospedagem
+    average_fuel_consuption = 8*1000  # 8 Km/L
+    # diesel_price = 5 # R$/L
+    diesel_price = config.custo_gasolina  # R$/L
+    # employee_sallary = 80/(60*60) #R$ 80,00 / h
+    employee_sallary = config.salario_hora/(60*60)  # R$ 80,00 / h
+    max_work_time = 12*60*60  # 12h
+    average_maintaince_time = 4*60*60  # 4h
     otimized_path_matrix = []
     total_price = 0
     for vehicle_id in range(data['num_vehicles']):
@@ -110,49 +122,67 @@ def run_sleep_otimization(solution, data, manager, routing): # Decides if driver
             if current_travel_time + current_maintaince_time + average_maintaince_time + time_callback(previous_index, index, manager, data) + new_return_time <= max_work_time:
                 otimized_path += [manager.IndexToNode(index)]
                 current_maintaince_time += average_maintaince_time
-                current_travel_time += time_callback(previous_index, index, manager, data)
-                route_time += average_maintaince_time + time_callback(previous_index, index, manager, data)
-                route_price += (time_callback(previous_index, index, manager, data)+ average_maintaince_time)*employee_sallary + distance_callback(previous_index, index, manager, data)*diesel_price/average_fuel_consuption
-            elif current_travel_time + current_maintaince_time + average_maintaince_time + time_callback(previous_index, index, manager, data) <= max_work_time: #sleeps after maintaince in next city
+                current_travel_time += time_callback(
+                    previous_index, index, manager, data)
+                route_time += average_maintaince_time + \
+                    time_callback(previous_index, index, manager, data)
+                route_price += (time_callback(previous_index, index, manager, data) + average_maintaince_time)*employee_sallary + \
+                    distance_callback(
+                        previous_index, index, manager, data)*diesel_price/average_fuel_consuption
+            # sleeps after maintaince in next city
+            elif current_travel_time + current_maintaince_time + average_maintaince_time + time_callback(previous_index, index, manager, data) <= max_work_time:
                 otimized_path += [manager.IndexToNode(index)]
                 current_maintaince_time = 0
                 current_travel_time = 0
-                route_time += average_maintaince_time + time_callback(previous_index, index, manager, data)
-                route_price += sleep_price + (average_maintaince_time + time_callback(previous_index, index, manager, data))*employee_sallary + (distance_callback(previous_index, index, manager, data))*diesel_price/average_fuel_consuption
-            elif current_travel_time + current_maintaince_time + time_callback(previous_index, index, manager, data) <= max_work_time: 
-                if (current_return_time + new_return_time)*employee_sallary + (current_return_distance+new_return_distance)*diesel_price/average_fuel_consuption < sleep_price: # returns to origin
-                    otimized_path += [manager.IndexToNode(start), manager.IndexToNode(index)]
+                route_time += average_maintaince_time + \
+                    time_callback(previous_index, index, manager, data)
+                route_price += sleep_price + (average_maintaince_time + time_callback(previous_index, index, manager, data))*employee_sallary + (
+                    distance_callback(previous_index, index, manager, data))*diesel_price/average_fuel_consuption
+            elif current_travel_time + current_maintaince_time + time_callback(previous_index, index, manager, data) <= max_work_time:
+                if (current_return_time + new_return_time)*employee_sallary + (current_return_distance+new_return_distance)*diesel_price/average_fuel_consuption < sleep_price:  # returns to origin
+                    otimized_path += [manager.IndexToNode(
+                        start), manager.IndexToNode(index)]
                     current_maintaince_time = average_maintaince_time
-                    current_travel_time = time_callback(start, index, manager, data)
+                    current_travel_time = time_callback(
+                        start, index, manager, data)
                     route_time += average_maintaince_time + current_return_time + new_return_time
-                    route_price += (average_maintaince_time + current_return_time + new_return_time)*employee_sallary + (current_return_distance + new_return_distance)*diesel_price/average_fuel_consuption
-                else: #sleeps in next city and starts day with maintance
+                    route_price += (average_maintaince_time + current_return_time + new_return_time)*employee_sallary + (
+                        current_return_distance + new_return_distance)*diesel_price/average_fuel_consuption
+                else:  # sleeps in next city and starts day with maintance
                     otimized_path += [manager.IndexToNode(index)]
                     current_maintaince_time = average_maintaince_time
                     current_travel_time = 0
-                    route_time += average_maintaince_time + time_callback(previous_index, index, manager, data)
-                    route_price += sleep_price + (average_maintaince_time + time_callback(previous_index, index, manager, data))*employee_sallary + (distance_callback(previous_index, index, manager, data))*diesel_price/average_fuel_consuption
-            elif (current_return_time + new_return_time)*employee_sallary + (current_return_distance+new_return_distance)*diesel_price/average_fuel_consuption < sleep_price: # returns to origin
-                otimized_path += [manager.IndexToNode(start), manager.IndexToNode(index)]
+                    route_time += average_maintaince_time + \
+                        time_callback(previous_index, index, manager, data)
+                    route_price += sleep_price + (average_maintaince_time + time_callback(previous_index, index, manager, data))*employee_sallary + (
+                        distance_callback(previous_index, index, manager, data))*diesel_price/average_fuel_consuption
+            elif (current_return_time + new_return_time)*employee_sallary + (current_return_distance+new_return_distance)*diesel_price/average_fuel_consuption < sleep_price:  # returns to origin
+                otimized_path += [manager.IndexToNode(start),
+                                  manager.IndexToNode(index)]
                 current_maintaince_time = average_maintaince_time
-                current_travel_time = time_callback(start, index, manager, data)
+                current_travel_time = time_callback(
+                    start, index, manager, data)
                 route_time += average_maintaince_time + current_return_time + new_return_time
-                route_price += (average_maintaince_time + current_return_time + new_return_time)*employee_sallary + (current_return_distance + new_return_distance)*diesel_price/average_fuel_consuption
-            else: #sleeps in city
+                route_price += (average_maintaince_time + current_return_time + new_return_time)*employee_sallary + (
+                    current_return_distance + new_return_distance)*diesel_price/average_fuel_consuption
+            else:  # sleeps in city
                 otimized_path += [manager.IndexToNode(index)]
                 current_maintaince_time = average_maintaince_time
-                current_travel_time = time_callback(previous_index, index, manager, data)
-                route_time += average_maintaince_time + time_callback(previous_index, index, manager, data)
-                route_price += sleep_price + (time_callback(previous_index, index, manager, data)+ average_maintaince_time)*employee_sallary + distance_callback(previous_index, index, manager, data)*diesel_price/average_fuel_consuption
-        
+                current_travel_time = time_callback(
+                    previous_index, index, manager, data)
+                route_time += average_maintaince_time + \
+                    time_callback(previous_index, index, manager, data)
+                route_price += sleep_price + (time_callback(previous_index, index, manager, data) + average_maintaince_time) * \
+                    employee_sallary + \
+                    distance_callback(
+                        previous_index, index, manager, data)*diesel_price/average_fuel_consuption
+
         total_price += route_price
         otimized_path_matrix = otimized_path_matrix + [otimized_path]
         print(f'Route {vehicle_id} Time: {route_time}s')
         print(f'Route {vehicle_id} Price: R${route_price : .2f}')
     print(otimized_path_matrix)
     print(f'Total Price: R${total_price : .2f}')
-    
-
 
 
 def run_otimization(selected_agency):
@@ -172,7 +202,8 @@ def run_otimization(selected_agency):
     routing = pywrapcp.RoutingModel(manager)
 
     # Create and register a transit callback.
-    transit_callback_index = routing.RegisterTransitCallback(lambda from_node, to_node : distance_callback(from_node, to_node, manager, data))
+    transit_callback_index = routing.RegisterTransitCallback(
+        lambda from_node, to_node: distance_callback(from_node, to_node, manager, data))
 
     # Define cost of each arc.
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
@@ -188,7 +219,7 @@ def run_otimization(selected_agency):
         dimension_name)
     distance_dimension = routing.GetDimensionOrDie(dimension_name)
     distance_dimension.SetGlobalSpanCostCoefficient(100)
-    
+
     # Setting first solution heuristic.
     search_parameters = pywrapcp.DefaultRoutingSearchParameters()
     search_parameters.first_solution_strategy = (
@@ -203,9 +234,3 @@ def run_otimization(selected_agency):
         run_sleep_otimization(solution, data, manager, routing)
     else:
         print('No solution found !')
-    
-
-
-
-
-
