@@ -34,7 +34,9 @@ class FaleConosco(tk.Frame):
                          font=controller.titlefont, bg=controller.pagesbg)
         label.pack(side="left", padx=20)
 
-        message_label = tk.Label(message_container, text="Encontrou algum problema no uso do 125Min?Por favor,nos avise!",
+        message_label = tk.Label(message_container, text="""Encontrou algum problema no uso do 125Min?Por favor,nos avise!
+        Telefone: +55 (18) 98129-4701
+        E-mail: romulo.borio@ga.ita.br""",
                                  font=controller.descriptionfont, bg=controller.pagesbg)
         message_label.pack(side="left", padx=20)
 
