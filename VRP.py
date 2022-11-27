@@ -13,6 +13,7 @@ import MapsAPI
 from models.config import Config
 from abc import ABC, abstractmethod
 import datetime
+from fpdf import FPDF
 
 class OtimizationResult():
     def __init__(self, path_list, total_cost, num_vehicles):
@@ -21,12 +22,28 @@ class OtimizationResult():
         self.date = datetime.datetime.now()
         self.num_vehicles = num_vehicles
     def print_report(self):
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.cell(200, 20, txt=f'Otimização de rotas calculada pelo 125Min',
+                 ln=1, align='C')
+        pdf.cell(200, 10, txt=f' ',
+                 ln=1, align='C')
+        pdf.cell(200, 10, txt=f'Data da Otimização: {self.date.day}/{self.date.month}/{self.date.year}',
+                 ln=1, align='L')
+        pdf.cell(200, 10, txt=f"Custo Total da Viagem: R${self.total_cost : .2f}",
+                 ln=1, align='L')
+        pdf.cell(200, 10, txt=f'O número total de motoristas empregados foi: {self.num_vehicles}',
+                 ln=1, align='L')
+        pdf.cell(200, 10, txt='O resumo por motorista pode ser visualizado nas próximas páginas:',
+                 ln=1, align='L')
         print(f'Data da Otimização: {self.date.day}/{self.date.month}/{self.date.year}')
         print(f"Custo Total da Viagem: R${self.total_cost : .2f}")
         print(f'O número total de motoristas empregados foi: {self.num_vehicles}')
         print('O resumo por motorista pode ser visualizado abaixo:')
         for driver_path in self.path_list:
-            driver_path.print_report()
+            driver_path.print_report(pdf)
+        pdf.output("Rotas Otimizadas por 125Min.pdf")
     
 
 
@@ -34,7 +51,7 @@ class RouteStep(ABC):
     def __init__(self, type):
         self.type = type
     @abstractmethod
-    def print_step(self):
+    def print_step(self, pdf):
         pass
 
 
@@ -43,8 +60,10 @@ class Maintance(RouteStep):
         super().__init__("Maintance")
         self.CEP = CEP
         self.ID = ID
-    def print_step(self):
+    def print_step(self, pdf):
         print(f'Manutenção na Agência de CEP: {self.CEP} e ID: {self.ID}')
+        pdf.cell(200, 10, txt=f'Manutenção na Agência de CEP: {self.CEP} e ID: {self.ID}',
+                 ln=1, align='L')
 
 
 class Trip(RouteStep):
@@ -52,16 +71,20 @@ class Trip(RouteStep):
         super().__init__("Trip")
         self.origin = origin
         self.destination = destination
-    def print_step(self):
+    def print_step(self, pdf):
         print(f'Deslocamento de {self.origin} para {self.destination}')
+        pdf.cell(200, 10, txt=f'Deslocamento de {self.origin} para {self.destination}',
+                 ln=1, align='L')
 
 
 class Sleep(RouteStep):
     def __init__(self, city):
         super().__init__("Sleep")
         self.city = city
-    def print_step(self):
+    def print_step(self, pdf):
         print(f'Dorme em: {self.city}')
+        pdf.cell(200, 10, txt=f'Dorme em: {self.city}',
+                 ln=1, align='L')
 
 
 class DriverPath():
@@ -71,13 +94,23 @@ class DriverPath():
         self.path = path
         self.driver_id = driver_id
 
-    def print_report(self):
+    def print_report(self, pdf):
+        pdf.add_page()
+        pdf.cell(200, 10, txt=f'\n**************** Motorista {self.driver_id} *****************\n',
+                 ln=1, align='C')
+        pdf.cell(200, 10, txt=f'Tempo Total da Rota: {self.route_time}s',
+                 ln=1, align='L')
+        pdf.cell(200, 10, txt=f'Valor Estimado da Viagem: R${self.route_cost : .2f}',
+                 ln=1, align='L')
+        pdf.cell(200, 10, txt='\nRota Sugerida:\n',
+                 ln=1, align='L')
         print(f'\n**************** Motorista {self.driver_id} *****************\n')
         print(f'Tempo Total da Rota: {self.route_time}s')
         print(f'Valor Estimado da Viagem: R${self.route_cost : .2f}')
         print('\nRota Sugerida:\n')
         for step in self.path:
-            step.print_step()
+            step.print_step(pdf)
+        # pdf.output(f'Rota_Motorista_{self.driver_id}.pdf')
 
 
 def create_data_model(num_vehicles, api_key, adress_list):

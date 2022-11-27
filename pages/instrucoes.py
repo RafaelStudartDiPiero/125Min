@@ -40,17 +40,17 @@ class Instrucoes(tk.Frame):
                         command=lambda: controller.up_frame("WelcomePage"), bg=controller.buttonbg, height=2)
         bou.pack(side="right")
 
-        message.insert(tk.END, """•Inicialmente, deve-se informar os dados referentes a configuração em “Atualizar dados”.
+        message.insert(tk.END, """• Inicialmente, deve-se informar os dados referentes à configuração em “Atualizar dados”.
 Após preencher os campos ou deixá-los vazios, pode-se clicar em "Alterar", mostrando os valores de configuração armazenados.
 
-•Em seguida, vá em “Planejar rota” e selecione as agências que quer visitar.
+• Em seguida, vá em “Planejar rota” e selecione as agências que quer visitar.
 Se necessário, registre uma nova agência em “Registrar nova agência”.
 
-•Feito isso, o nosso banco de dados terá todas as informações necessárias para otimizar a rota.
+• Feito isso, o nosso banco de dados terá todas as informações necessárias para otimizar a rota.
 
-•Por fim, basta ir em “Planejar rota”, atualizar as opções com as alterações realizadas e escolher 
+• Por fim, basta ir em “Planejar rota”, atualizar as opções com as alterações realizadas e escolher 
 as agências que quer visitar, clicando em "Planejar Rota".
 
-•Pronto, o 125Min mostrará o melhor caminho a ser feito, fazendo você economizar tempo e 
+• Pronto, o 125Min mostrará o melhor caminho a ser feito, fazendo você economizar tempo e 
 dinheiro!
 """)
