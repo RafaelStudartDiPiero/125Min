@@ -104,4 +104,5 @@ class PlanejarRota(tk.Frame):
             self.scroll.insert('end', '\n')
 
     def runOtimization(self):
+        self.selected_boxes.insert(0, (0, 'Rua Nunes Machado', '977', 'Araras', '13600-021'))
         run_otimization(self.selected_boxes)
