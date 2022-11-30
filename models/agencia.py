@@ -14,6 +14,15 @@ class Agencia(object):
         banco = Banco()
 
         try:
+            if not self.numero.isdigit():
+                raise Exception("Ocorreu um erro na inserção de uma agência")
+
+            if len(self.cep) != 9:
+                raise Exception("Ocorreu um erro na inserção de uma agência")
+
+            if (not self.cep[0:5].isdigit()) or self.cep[5] != "-" or (not self.cep[6:9].isdigit()):
+                raise Exception("Ocorreu um erro na inserção de uma agência")
+
             c = banco.conexao.cursor()
 
             c.execute('''insert into agencias(rua,numero,cidade,cep) values("{}","{}","{}","{}")'''.format(

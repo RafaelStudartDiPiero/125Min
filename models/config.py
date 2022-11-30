@@ -15,6 +15,8 @@ class Config(object):
     def updateConfig(self):
         banco = Banco()
         try:
+            if (self.consumo_combustivel < 0 or self.tempo_manutencao < 0 or self.salario_hora < 0 or self.hospedagem < 0 or self.custo_gasolina < 0 or self.numero_motoristas < 1):
+                raise Exception("Ocorreu um erro na alteração da configuração")
             c = banco.conexao.cursor()
 
             c.execute('''update config set consumo_combustivel = {},tempo_manutencao = {}, salario_hora = {}, hospedagem = {}, custo_gasolina = {}, numero_motoristas = {} where id_config = 0 '''.format(
