@@ -49,7 +49,8 @@ class Agencia(object):
             if (not self.cep[0:5].isdigit()) or self.cep[5] != "-" or (not self.cep[6:9].isdigit()):
                 raise Exception("Ocorreu um erro na alteração de uma agência")
 
-            if self.selectAgencia(self.cep) == "Ocorreu um erro na busca de uma agência":
+            agencia_aux = Agencia()
+            if agencia_aux.selectAgencia(self.cep) == "Ocorreu um erro na busca de uma agência":
                 raise Exception("Ocorreu um erro na alteração de uma agência")
 
             c = banco.conexao.cursor()
@@ -87,14 +88,11 @@ class Agencia(object):
 
     def selectAgencia(self, cep):
         banco = Banco()
+        self.id_agencia = -1
         try:
             c = banco.conexao.cursor()
             c.execute(
                 '''select * from agencias where cep ="{}"'''.format(str(cep)))
-
-            row = c.fetchone()
-            if row == None:
-                raise Exception("Ocorreu um erro na busca de uma agência")
 
             for row in c:
                 self.id_agencia = row[0]
@@ -102,6 +100,11 @@ class Agencia(object):
                 self.numero = row[2]
                 self.cidade = row[3]
                 self.cep = row[4]
+
+            # k = c.fetchone()
+            if self.id_agencia == -1:
+                c.close()
+                raise Exception("Ocorreu um erro na busca de uma agência")
 
             c.close()
 

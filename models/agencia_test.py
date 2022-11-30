@@ -1,4 +1,5 @@
 from models.agencia import Agencia
+import time
 # Duas agencias modelo, uma que vai ser adiciona, atualizada, selecionada e removida e outra que nunca existira.
 
 
@@ -72,3 +73,23 @@ def test_agencia_delete():
     # Caso Incorreto - Agência Inexistente
     result1 = agencia0.deleteAgencia
     assert result1 == "Ocorreu um erro na exclusão de uma agência"
+
+
+def test_agencia_requirements():
+
+    agencia0 = Agencia(rua="Rua H8A", numero="125",
+                       cidade="São José dos Campos", cep="12228-460")
+    agencia0.deleteAgencia
+    agencia0.inserirAgencia()
+
+    agencia1 = Agencia()
+    agencia1.selectAgencia("12228-460")
+    assert agencia1.rua == "Rua H8A"
+
+    agencia0.rua = "Rua H8B"
+    agencia0.updateAgencia
+    agencia1.selectAgencia("12228-460")
+    assert agencia1.rua == "Rua H8B"
+
+    agencia0.deleteAgencia
+    assert agencia1.selectAgencia("12228-460") == "Ocorreu um erro na busca de uma agência"

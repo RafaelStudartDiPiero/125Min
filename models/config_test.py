@@ -29,3 +29,25 @@ def test_config_update():
 
     # Voltando ao Estado Inicial
     config0.updateConfig
+
+def test_config_requirements():
+    config = Config()
+    config.selectConfig()
+
+    config1 = Config(2, 2, 2, 2, 2, 2)
+    config1.updateConfig
+    config1.selectConfig()
+    assert config1.consumo_combustivel == 2
+
+    config1.consumo_combustivel = -2
+    config1.updateConfig
+    config1.selectConfig()
+    assert config1.consumo_combustivel == 2
+
+    config1.consumo_combustivel = 5
+    config1.updateConfig
+    config1.selectConfig()
+    assert config1.consumo_combustivel == 5
+
+    # Voltando ao Estado Inicial
+    config.updateConfig
