@@ -16,11 +16,12 @@ import datetime
 from fpdf import FPDF
 
 class OtimizationResult():
-    def __init__(self, path_list, total_cost, num_vehicles):
+    def __init__(self, path_list, total_cost, num_vehicles, num_agencies):
         self.path_list = path_list
         self.total_cost = total_cost
         self.date = datetime.datetime.now()
         self.num_vehicles = num_vehicles
+        self.num_agencies = num_agencies
     def print_report(self):
         pdf = FPDF()
         pdf.add_page()
@@ -35,11 +36,14 @@ class OtimizationResult():
                  ln=1, align='L')
         pdf.cell(200, 10, txt=f'O número total de motoristas empregados foi: {self.num_vehicles}',
                  ln=1, align='L')
+        pdf.cell(200, 10, txt=f'O número total de agências visitadas foi: {self.num_agencies}',
+                 ln=1, align='L')
         pdf.cell(200, 10, txt='O resumo por motorista pode ser visualizado nas próximas páginas:',
                  ln=1, align='L')
         print(f'Data da Otimização: {self.date.day}/{self.date.month}/{self.date.year}')
         print(f"Custo Total da Viagem: R${self.total_cost : .2f}")
         print(f'O número total de motoristas empregados foi: {self.num_vehicles}')
+        print(f'O número total de agências visitadas foi: {self.num_agencies}')
         print('O resumo por motorista pode ser visualizado abaixo:')
         for driver_path in self.path_list:
             driver_path.print_report(pdf)
@@ -86,6 +90,23 @@ class Sleep(RouteStep):
         pdf.cell(200, 10, txt=f'Dorme em: {self.city}',
                  ln=1, align='L')
 
+
+class End(RouteStep):
+    def __init__(self, city):
+        super().__init__("End")
+        self.city = city
+    def print_step(self, pdf):
+        print(f'Retorno para: {self.city}')
+        pdf.cell(200, 10, txt=f'Retorno para: {self.city}',
+                 ln=1, align='L')
+
+class Empty(RouteStep):
+    def __init__(self):
+        super().__init__("Empty")
+    def print_step(self, pdf):
+        print(f'Este motorista não foi utilizado')
+        pdf.cell(200, 10, txt=f'Este motorista não foi utilizado',
+                 ln=1, align='L')
 
 class DriverPath():
     def __init__(self, driver_id, route_time, route_cost, path) :
@@ -157,30 +178,6 @@ def time_callback(from_index, to_index, manager, data):
     to_node = manager.IndexToNode(to_index)
     return data['time_matrix'][from_node][to_node]
 
-"""
-def print_solution(data, manager, routing, solution):
-    #Prints solution on console.
-    print(f'Objective: {solution.ObjectiveValue()}')
-    max_route_distance = 0
-    for vehicle_id in range(data['num_vehicles']):
-        index = routing.Start(vehicle_id)
-        plan_output = 'Route for vehicle {}:\n'.format(vehicle_id)
-        route_distance = 0
-        route_time = 0
-        while not routing.IsEnd(index):
-            plan_output += ' {} -> '.format(manager.IndexToNode(index))
-            previous_index = index
-            index = solution.Value(routing.NextVar(index))
-            route_time += time_callback(previous_index, index, manager, data)
-            route_distance += routing.GetArcCostForVehicle(
-                previous_index, index, vehicle_id)
-        plan_output += '{}\n'.format(manager.IndexToNode(index))
-        plan_output += 'Distance of the route: {}m\n'.format(route_distance)
-        plan_output += 'Time of the route: {}s\n'.format(route_time)
-        print(plan_output)
-        max_route_distance = max(route_distance, max_route_distance)
-    print('Maximum of the route distances: {}m'.format(max_route_distance))
-"""
 
 # Decides if driver will return to origin
 def run_sleep_otimization(solution, data, manager, routing, selected_agency):
@@ -192,7 +189,7 @@ def run_sleep_otimization(solution, data, manager, routing, selected_agency):
     employee_sallary = config.salario_hora/(60*60)  # convert from R$/h to R$/s
     max_work_time = 12*60*60  # 12h
     average_maintaince_time = config.tempo_manutencao*60*60  # convert from h to s
-    result = OtimizationResult([], 0, data['num_vehicles'])
+    result = OtimizationResult([], 0, data['num_vehicles'], 0)
     for vehicle_id in range(data['num_vehicles']):
         driver_path = DriverPath(vehicle_id + 1, 0, 0, [])
         current_travel_time = 0
@@ -205,8 +202,7 @@ def run_sleep_otimization(solution, data, manager, routing, selected_agency):
         index = start
         start_agency =  selected_agency[manager.IndexToNode(index)] #vetor com id, numero, rua, cidade, cep
         agency = start_agency
-        otimized_path = [manager.IndexToNode(index)] # is not used anymore -> delete on final project
-        while not routing.IsEnd(index):
+        while (not routing.IsEnd(index)) and (not routing.IsEnd(solution.Value(routing.NextVar(index)))):
             previous_index = index
             previous_agency = agency
             index = solution.Value(routing.NextVar(index))
@@ -217,8 +213,8 @@ def run_sleep_otimization(solution, data, manager, routing, selected_agency):
             new_return_distance = time_callback(index, start, manager, data)
             # Goes to next city, still having time to do the maintaince and return to origin
             if current_travel_time + current_maintaince_time + average_maintaince_time + time_callback(previous_index, index, manager, data) + new_return_time <= max_work_time:
-                otimized_path += [manager.IndexToNode(index), 'maintance']
                 driver_path.path += [Trip(previous_agency[3], agency[3]), Maintance(agency[4], agency[0])]
+                result.num_agencies += 1
                 current_maintaince_time += average_maintaince_time
                 current_travel_time += time_callback(
                     previous_index, index, manager, data)
@@ -229,8 +225,8 @@ def run_sleep_otimization(solution, data, manager, routing, selected_agency):
                         previous_index, index, manager, data)*diesel_price/average_fuel_consuption
             # sleeps after maintaince in next city
             elif current_travel_time + current_maintaince_time + average_maintaince_time + time_callback(previous_index, index, manager, data) <= max_work_time:
-                otimized_path += [manager.IndexToNode(index), 'maintance', 'sleep']
                 driver_path.path += [Trip(previous_agency[3], agency[3]), Maintance(agency[4], agency[0]), Sleep(agency[3])]
+                result.num_agencies += 1
                 current_maintaince_time = 0
                 current_travel_time = 0
                 driver_path.route_time += average_maintaince_time + \
@@ -240,9 +236,8 @@ def run_sleep_otimization(solution, data, manager, routing, selected_agency):
             elif current_travel_time + current_maintaince_time + time_callback(previous_index, index, manager, data) <= max_work_time:
                 # returns to origin so as to sleep
                 if (current_return_time + new_return_time)*employee_sallary + (current_return_distance+new_return_distance)*diesel_price/average_fuel_consuption < sleep_price:  
-                    otimized_path += [manager.IndexToNode(
-                        start), 'sleep', manager.IndexToNode(index), 'maintance']
                     driver_path.path += [Trip(previous_agency[3], start_agency[3]), Sleep(start_agency[3]), Trip(start_agency[3], agency[3]), Maintance(agency[4], agency[0])]
+                    result.num_agencies += 1
                     current_maintaince_time = average_maintaince_time
                     current_travel_time = time_callback(
                         start, index, manager, data)
@@ -251,8 +246,8 @@ def run_sleep_otimization(solution, data, manager, routing, selected_agency):
                         current_return_distance + new_return_distance)*diesel_price/average_fuel_consuption
                 # sleeps in next city and starts day with maintance
                 else:  
-                    otimized_path += [manager.IndexToNode(index), 'sleep', 'maintance']
                     driver_path.path += [Trip(previous_agency[3], agency[3]), Sleep(agency[3]), Maintance(agency[4], agency[0])]
+                    result.num_agencies += 1
                     current_maintaince_time = average_maintaince_time
                     current_travel_time = 0
                     driver_path.route_time += average_maintaince_time + \
@@ -261,9 +256,8 @@ def run_sleep_otimization(solution, data, manager, routing, selected_agency):
                         distance_callback(previous_index, index, manager, data))*diesel_price/average_fuel_consuption
             # returns to origin so as to sleep
             elif (current_return_time + new_return_time)*employee_sallary + (current_return_distance+new_return_distance)*diesel_price/average_fuel_consuption < sleep_price:  
-                otimized_path += [manager.IndexToNode(start), 'sleep',
-                                  manager.IndexToNode(index), 'maintance']
                 driver_path.path += [Trip(previous_agency[3], start_agency[3]), Sleep(start_agency[3]), Trip(start_agency[3], agency[3]), Maintance(agency[4], agency[0])]
+                result.num_agencies += 1
                 current_maintaince_time = average_maintaince_time
                 current_travel_time = time_callback(
                     start, index, manager, data)
@@ -272,8 +266,8 @@ def run_sleep_otimization(solution, data, manager, routing, selected_agency):
                     current_return_distance + new_return_distance)*diesel_price/average_fuel_consuption
             # sleeps in current city
             else:  
-                otimized_path += ['sleep', manager.IndexToNode(index), 'maintance']
                 driver_path.path += [Sleep(previous_agency[3]), Trip(previous_agency[3], agency[3]), Maintance(agency[4], agency[0])]
+                result.num_agencies += 1
                 current_maintaince_time = average_maintaince_time
                 current_travel_time = time_callback(
                     previous_index, index, manager, data)
@@ -284,6 +278,19 @@ def run_sleep_otimization(solution, data, manager, routing, selected_agency):
                     distance_callback(
                         previous_index, index, manager, data)*diesel_price/average_fuel_consuption
 
+
+        if len(driver_path.path) == 0:
+            driver_path.path += [Empty()]
+        else:
+            previous_index = index
+            previous_agency = agency
+            index = solution.Value(routing.NextVar(index))
+            agency = selected_agency[manager.IndexToNode(index)]
+            driver_path.path += [End(agency[3])]
+            driver_path.route_time += time_callback(previous_index, index, manager, data)
+            driver_path.route_cost += time_callback(previous_index, index, manager, data)*employee_sallary + \
+                    distance_callback(
+                        previous_index, index, manager, data)*diesel_price/average_fuel_consuption
         result.total_cost += driver_path.route_cost
         result.path_list += [driver_path]
     return result
@@ -336,7 +343,6 @@ def run_otimization(selected_agency):
 
     # Print solution on console.
     if solution:
-        #print_solution(data, manager, routing, solution)
         result_otimization = run_sleep_otimization(solution, data, manager, routing, selected_agency)
         result_otimization.print_report()
     else:
