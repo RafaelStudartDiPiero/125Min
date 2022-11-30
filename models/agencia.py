@@ -40,10 +40,22 @@ class Agencia(object):
     def updateAgencia(self):
         banco = Banco()
         try:
+            if not self.numero.isdigit():
+                raise Exception("Ocorreu um erro na alteração de uma agência")
+
+            if len(self.cep) != 9:
+                raise Exception("Ocorreu um erro na alteração de uma agência")
+
+            if (not self.cep[0:5].isdigit()) or self.cep[5] != "-" or (not self.cep[6:9].isdigit()):
+                raise Exception("Ocorreu um erro na alteração de uma agência")
+
+            if self.selectAgencia(self.cep) == "Ocorreu um erro na busca de uma agência":
+                raise Exception("Ocorreu um erro na alteração de uma agência")
+
             c = banco.conexao.cursor()
 
-            c.execute('''update agencias set rua ="{}", numero = "{}", cidade = "{}", cep = "{}" where id_agencia ={}'''.format(
-                self.rua, self.numero, self.cidade, self.cep, str(self.id_agencia)))
+            c.execute('''update agencias set rua ="{}", numero = "{}", cidade = "{}" where cep="{}"'''.format(
+                self.rua, self.numero, self.cidade, str(self.cep)))
 
             banco.conexao.commit()
             c.close()
@@ -57,6 +69,9 @@ class Agencia(object):
     def deleteAgencia(self):
         banco = Banco()
         try:
+            if self.selectAgencia(self.cep) == "Ocorreu um erro na busca de uma agência":
+                raise Exception("Ocorreu um erro na exclusão de uma agência")
+
             c = banco.conexao.cursor()
 
             c.execute('''delete from agencias where cep ="{}" '''.format(
@@ -77,6 +92,10 @@ class Agencia(object):
             c.execute(
                 '''select * from agencias where cep ="{}"'''.format(str(cep)))
 
+            row = c.fetchone()
+            if row == None:
+                raise Exception("Ocorreu um erro na busca de uma agência")
+
             for row in c:
                 self.id_agencia = row[0]
                 self.rua = row[1]
@@ -84,8 +103,6 @@ class Agencia(object):
                 self.cidade = row[3]
                 self.cep = row[4]
 
-            if self.cep == "":
-                raise Exception("Ocorreu um erro na busca de uma agência")
             c.close()
 
             return "Agência encontrada com sucesso."
